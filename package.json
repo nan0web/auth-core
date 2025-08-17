@@ -1,0 +1,23 @@
+{
+	"name": "@nan0web/auth-core",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.js",
+	"types": "types/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"test": "node --test",
+		"test:coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js"
+	},
+	"keywords": [],
+	"author": "ЯRаСлав YaRaSlove <support@yaro.page>",
+	"license": "ISC",
+	"packageManager": "pnpm@10.11.0",
+	"devDependencies": {
+		"@nan0web/types": "workspace:*"
+	},
+	"peerDependencies": {
+		"@nan0web/types": "^1.0.0"
+	}
+}
