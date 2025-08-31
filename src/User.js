@@ -140,7 +140,7 @@ class User {
 	 */
 	getTokens(validOnly = false) {
 		if (validOnly) {
-			return new Map(this.#tokens.entries().filter(
+			return new Map(Array.from(this.#tokens.entries()).filter(
 				([, time]) => this.tokenExpiryService.isValid(time)
 			))
 		}

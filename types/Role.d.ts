@@ -7,7 +7,6 @@ declare class Role {
         user: string;
     };
     /**
-     *
      * @param {string | object} input
      * @returns {Role}
      */

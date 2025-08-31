@@ -38,6 +38,7 @@ export type UserInput = {
 declare class User {
     static TOKEN_LIFETIME: number;
     static TokenExpiryService: typeof TokenExpiryService;
+    static Role: typeof Role;
     /**
      * Creates a new User instance from a raw object
      * @param {object} input - Raw user data
@@ -71,6 +72,14 @@ declare class User {
     updatedAt: Date;
     /** @type {TokenExpiryService} */
     tokenExpiryService: TokenExpiryService;
+    /**
+     * @returns {typeof TokenExpiryService}
+     */
+    get TokenExpiryService(): typeof TokenExpiryService;
+    /**
+     * @returns {typeof Role}
+     */
+    get Role(): typeof Role;
     /**
      * @param {string | Role} role
      * @returns {boolean} True if roles include the current role, otherwise false.
