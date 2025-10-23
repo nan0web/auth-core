@@ -7,15 +7,27 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
-		"test": "node --test",
-		"test:coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js"
+		"test": "node --test --test-timeout=3333 \"src/**/*.test.js\" | nan0test parse --fail",
+		"test:coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js",
+		"test:docs": "node --test src/README.md.js",
+		"test:release": "node --test \"releases/**/*.test.js\"",
+		"test:coverage:collect": "nan0test coverage",
+		"test:status": "nan0test status",
+		"precommit": "npm test",
+		"prepush": "npm test",
+		"prepare": "husky",
+		"clean": "rm -rf .cache/ && rm -rf dist/",
+		"clean:modules": "rm -rf node_modules",
+		"play": "node play/main.js"
 	},
 	"keywords": [],
 	"author": "ЯRаСлав YaRaSlove <support@yaro.page>",
 	"license": "ISC",
 	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
-		"@nan0web/types": "workspace:*"
+		"@nan0web/types": "workspace:*",
+		"@nan0web/test": "workspace:*",
+		"husky": "^9.1.7"
 	},
 	"peerDependencies": {
 		"@nan0web/types": "^1.0.0"
