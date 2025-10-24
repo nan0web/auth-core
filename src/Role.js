@@ -67,11 +67,19 @@ class Role {
 	}
 	/**
 	 * Return the raw role value as a string.
-	 *
+	 * @param {object} [input]
+	 * @param {boolean} [input.detailed=false]
 	 * @returns {string}
 	 */
-	toString() {
-		return this.value
+	toString(input = { detailed: false }) {
+		const {
+			detailed = false
+		} = input
+		if (!detailed) return this.value
+		const roles = Object.fromEntries(Object.entries(this.ROLES).map(
+			([key, value]) => [value, key])
+		)
+		return roles[this.value] ?? ""
 	}
 	/**
 	 * Create a Role instance from a string or existing Role.

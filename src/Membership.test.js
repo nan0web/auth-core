@@ -16,7 +16,7 @@ suite("Membership", () => {
 		it("admin role bypasses permission checks", () => {
 			const mem = new Membership()
 			mem.join("admins", "admin", new Set(), {})
-			assert.ok(mem.can("admins", "any"))
+			assert.ok(mem.can("admins", "*"))
 		})
 	})
 

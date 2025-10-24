@@ -53,8 +53,11 @@ declare class Role {
     validateRoles(): void;
     /**
      * Return the raw role value as a string.
-     *
+     * @param {object} [input]
+     * @param {boolean} [input.detailed=false]
      * @returns {string}
      */
-    toString(): string;
+    toString(input?: {
+        detailed?: boolean | undefined;
+    } | undefined): string;
 }

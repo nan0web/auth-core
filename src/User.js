@@ -149,15 +149,26 @@ class User {
 
 	/**
 	 * Represents object as a string (debugger version).
+	 * @param {object} [input]
+	 * @param {boolean} [input.detailed=false]
+	 * @param {boolean} [input.hideDate=false]
+	 * @param {boolean} [input.hideRoles=false]
+	 * @param {string} [input.eol="\n"]
 	 * @returns {string}
 	 */
-	toString() {
+	toString(input = { detailed: false, hideDate: false, hideRoles: false, eol: "\n" }) {
+		const {
+			detailed = false,
+			hideDate = false,
+			hideRoles = false,
+			eol = "\n",
+		} = input
 		return [
 			this.name,
 			this.email ? `<${this.email}>` : 0,
-			this.createdAt.toISOString().slice(0, 19).replace("T", " "),
-			this.roles.join(", "),
-		].filter(Boolean).join(" ")
+			hideDate ? "" : this.createdAt.toISOString().slice(0, 19).replace("T", " "),
+			hideRoles ? "" : this.roles.map(r => r.toString({ detailed })).join(", "),
+		].filter(Boolean).join(eol)
 	}
 
 	/**

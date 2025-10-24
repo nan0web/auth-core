@@ -101,9 +101,19 @@ declare class User {
     getTokens(validOnly?: boolean): Map<string, Date>;
     /**
      * Represents object as a string (debugger version).
+     * @param {object} [input]
+     * @param {boolean} [input.detailed=false]
+     * @param {boolean} [input.hideDate=false]
+     * @param {boolean} [input.hideRoles=false]
+     * @param {string} [input.eol="\n"]
      * @returns {string}
      */
-    toString(): string;
+    toString(input?: {
+        detailed?: boolean | undefined;
+        hideDate?: boolean | undefined;
+        hideRoles?: boolean | undefined;
+        eol?: string | undefined;
+    } | undefined): string;
     #private;
 }
 import TokenExpiryService from "./TokenExpiryService.js";

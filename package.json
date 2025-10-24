@@ -25,8 +25,8 @@
 	"license": "ISC",
 	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
-		"@nan0web/types": "workspace:*",
-		"@nan0web/test": "workspace:*",
+		"@nan0web/types": "^1.0.2",
+		"@nan0web/test": "^1.0.2",
 		"husky": "^9.1.7"
 	},
 	"peerDependencies": {

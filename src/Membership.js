@@ -48,10 +48,13 @@ export default class Membership extends User {
 	 * @returns {boolean}
 	 */
 	can(key, perm) {
+		if (!["r", "w", "d", "*"].includes(perm)) {
+			throw new TypeError("Permission must be one of 'r', 'w', 'd', '*'")
+		}
 		const mem = this.memberships.get(key)
 		if (!mem) return false
 		const roleVal = mem.role.value
-		if (roleVal === Role.ROLES.admin || roleVal === "admin") return true
+		if ([Role.ROLES.admin, "admin"].includes(roleVal)) return true
 		return mem.perms.has(perm)
 	}
 

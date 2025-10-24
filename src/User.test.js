@@ -92,7 +92,7 @@ suite("User", () => {
 
 		it("toString() should return name and email", () => {
 			const user = new User({ name: "Test User", email: "test@example.com" })
-			assert.ok(user.toString().startsWith("Test User <test@example.com>"))
+			assert.ok(user.toString().startsWith("Test User\n<test@example.com>"))
 		})
 
 		it("from() should return existing User instance", () => {

@@ -47,7 +47,7 @@ function testRender() {
 	 * - `Role` – enumeration of user roles
 	 * - `Membership` – group based permission sets
 	 * - `TokenExpiryService` – simple token lifetime utilities
-	 * - `Auth` – façade exporting the above
+	 * - `Auth` – facade exporting the above
 	 *
 	 * ## Installation
 	 */
@@ -95,10 +95,13 @@ function testRender() {
 			email: "alice@example.com",
 			roles: ["admin", "user"],
 		})
-		console.info(user.toString())
-		assert.ok(user.is("admin"))
-		assert.ok(!user.is("guest"))
-		assert.equal(console.output()[0][1].includes("Alice"), true)
+		console.info(user.toString({ detailed: true, hideDate: true }))
+		// Alice <alice@example.com> admin, user
+		console.info(user.is("admin")) // ← true
+		console.info(user.is("guest")) // ← false
+		assert.equal(console.output()[0][1], "Alice\n<alice@example.com>\nadmin, user")
+		assert.equal(console.output()[1][1], true)
+		assert.equal(console.output()[2][1], false)
 	})
 
 	/**
@@ -111,12 +114,15 @@ function testRender() {
 		//import { TokenExpiryService } from "@nan0web/auth-core"
 		const service = new TokenExpiryService(2000) // 2 seconds
 		const tokenTime = new Date()
-		assert.ok(service.isValid(tokenTime))
+		console.info(service.isValid(tokenTime)) // ← true
 		// fast‑forward simulation
 		const past = new Date(Date.now() - 3000)
-		assert.equal(service.isValid(past), false)
+		console.info(service.isValid(past)) // ← false
 		console.info(service.getExpiryDate(tokenTime).toISOString())
-		assert.ok(console.output()[0][1].includes("Z"))
+		// the date in ISO format
+		assert.equal(console.output()[0][1], true)
+		assert.equal(console.output()[1][1], false)
+		assert.ok(console.output()[2][1].includes("Z"))
 	})
 
 	/**
@@ -130,31 +136,37 @@ function testRender() {
 		const mem = new Membership()
 		// regular group with explicit permissions
 		mem.join("lawyers", "moderator", new Set(["r", "w"]), { dailyCoins: 10 })
-		assert.ok(mem.can("lawyers", "r"))
-		assert.ok(!mem.can("lawyers", "d"))
+		console.info(mem.can("lawyers", "r")) // ← true
+		console.info(mem.can("lawyers", "d")) // ← false
 		mem.mintDailyCoins("lawyers")
 		const inner = mem.memberships.get("lawyers")
-		assert.equal(inner?.config.wallet, 10n)
-
+		console.info(inner?.config.wallet === 10n) // ← true
 		// admin role bypasses all permission checks
 		mem.join("admins", "admin", new Set(), {})
-		assert.ok(mem.can("admins", "any"))
+		console.info(mem.can("admins", "*")) // ← true
+		assert.equal(console.output()[0][1], true)
+		assert.equal(console.output()[1][1], false)
+		assert.equal(console.output()[2][1], true)
+		assert.equal(console.output()[3][1], true)
 	})
 
 	/**
 	 * @docs
-	 * ## Auth façade
+	 * ## Auth facade
 	 *
 	 * Exported object provides easy access to core classes.
 	 */
 	it("How to use the Auth facade?", () => {
 		//import { Auth } from "@nan0web/auth-core"
+		const user = new Auth.User({ name: "Bob" })
+		// Showing user name with createdAt date-time
+		console.info(user.toString())
+		// Bob
+		// YYYY-MM-DD HH:mm:SS
 		assert.ok(Auth.User)
 		assert.ok(Auth.Role)
 		assert.ok(Auth.TokenExpiryService)
-		const user = new Auth.User({ name: "Bob" })
-		console.info(user.toString())
-		assert.equal(console.output()[0][1].includes("Bob"), true)
+		assert.equal(console.output()[0][1].split("\n")[0], "Bob")
 	})
 
 	/**
