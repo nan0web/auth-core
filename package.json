@@ -1,7 +1,7 @@
 {
 	"name": "@nan0web/auth-core",
-	"version": "1.0.0",
-	"description": "",
+	"version": "1.1.0",
+	"description": "Core auth primitives: User, Role, Membership, AccessControl, Password, Session",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
 	"type": "module",
@@ -25,11 +25,14 @@
 	"license": "ISC",
 	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
-		"@nan0web/types": "^1.0.2",
 		"@nan0web/test": "^1.0.2",
+		"@nan0web/types": "^1.0.2",
 		"husky": "^9.1.7"
 	},
 	"peerDependencies": {
 		"@nan0web/types": "^1.0.0"
+	},
+	"dependencies": {
+		"@nan0web/log": "1.1.1"
 	}
 }
