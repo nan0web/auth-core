@@ -18,7 +18,8 @@
 		"prepare": "husky",
 		"clean": "rm -rf .cache/ && rm -rf dist/",
 		"clean:modules": "rm -rf node_modules",
-		"play": "node play/main.js"
+		"play": "node play/main.js",
+		"check": "npm run test && npm run test:docs && npm run build"
 	},
 	"keywords": [],
 	"author": "ЯRаСлав YaRaSlove <support@yaro.page>",
