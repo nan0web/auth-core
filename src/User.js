@@ -1,5 +1,5 @@
-import Role from "./Role.js"
-import TokenExpiryService from "./TokenExpiryService.js"
+import Role from './Role.js'
+import TokenExpiryService from './TokenExpiryService.js'
 
 /**
  * Interface for user configuration options
@@ -55,13 +55,13 @@ class User {
 	 */
 	constructor(input = {}) {
 		const {
-			name = "",
-			email = "",
-			passwordHash = "",
+			name = '',
+			email = '',
+			passwordHash = '',
 			verified = false,
-			verificationCode = "",
-			resetCode = "",
-			resetCodeAt = "",
+			verificationCode = '',
+			resetCode = '',
+			resetCodeAt = '',
 			roles = [],
 			createdAt = new Date(),
 			updatedAt = new Date(),
@@ -75,12 +75,13 @@ class User {
 		this.verificationCode = String(verificationCode)
 		this.resetCode = String(resetCode)
 		this.resetCodeAt = resetCodeAt ? new Date(resetCodeAt) : null
-		this.roles = (Array.isArray(roles) ? roles : roles.split(",")).map(r => this.Role.from(r))
+		this.roles = (Array.isArray(roles) ? roles : roles.split(',')).map((r) => this.Role.from(r))
 		this.createdAt = new Date(createdAt)
 		this.updatedAt = new Date(updatedAt)
-		this.#tokens = tokens instanceof Map
-			? tokens : new Map(Array.isArray(tokens)
-				? tokens : Object.entries(tokens))
+		this.#tokens =
+			tokens instanceof Map
+				? tokens
+				: new Map(Array.isArray(tokens) ? tokens : Object.entries(tokens))
 		for (const [token, time] of this.#tokens.entries()) {
 			this.#tokens.set(token, new Date(time))
 		}
@@ -108,7 +109,7 @@ class User {
 	is(role) {
 		try {
 			const test = this.Role.from(role)
-			return this.roles.some(r => r.value === test.value)
+			return this.roles.some((r) => r.value === test.value)
 		} catch {
 			return false
 		}
@@ -121,7 +122,7 @@ class User {
 	toObject() {
 		return {
 			...this,
-			roles: this.roles.join(","),
+			roles: this.roles.join(','),
 			createdAt: this.createdAt.toISOString(),
 			updatedAt: this.updatedAt.toISOString(),
 		}
@@ -140,9 +141,11 @@ class User {
 	 */
 	getTokens(validOnly = false) {
 		if (validOnly) {
-			return new Map(Array.from(this.#tokens.entries()).filter(
-				([, time]) => this.tokenExpiryService.isValid(time)
-			))
+			return new Map(
+				Array.from(this.#tokens.entries()).filter(([, time]) =>
+					this.tokenExpiryService.isValid(time),
+				),
+			)
 		}
 		return this.#tokens
 	}
@@ -156,19 +159,16 @@ class User {
 	 * @param {string} [input.eol="\n"]
 	 * @returns {string}
 	 */
-	toString(input = { detailed: false, hideDate: false, hideRoles: false, eol: "\n" }) {
-		const {
-			detailed = false,
-			hideDate = false,
-			hideRoles = false,
-			eol = "\n",
-		} = input
+	toString(input = { detailed: false, hideDate: false, hideRoles: false, eol: '\n' }) {
+		const { detailed = false, hideDate = false, hideRoles = false, eol = '\n' } = input
 		return [
 			this.name,
 			this.email ? `<${this.email}>` : 0,
-			hideDate ? "" : this.createdAt.toISOString().slice(0, 19).replace("T", " "),
-			hideRoles ? "" : this.roles.map(r => r.toString({ detailed })).join(", "),
-		].filter(Boolean).join(eol)
+			hideDate ? '' : this.createdAt.toISOString().slice(0, 19).replace('T', ' '),
+			hideRoles ? '' : this.roles.map((r) => r.toString({ detailed })).join(', '),
+		]
+			.filter(Boolean)
+			.join(eol)
 	}
 
 	/**

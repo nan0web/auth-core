@@ -116,5 +116,5 @@ declare class User {
     } | undefined): string;
     #private;
 }
-import TokenExpiryService from "./TokenExpiryService.js";
-import Role from "./Role.js";
+import TokenExpiryService from './TokenExpiryService.js';
+import Role from './Role.js';

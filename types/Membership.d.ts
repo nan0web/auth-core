@@ -53,5 +53,5 @@ export default class Membership extends User {
      */
     mintDailyCoins(key: string): void;
 }
-import User from "./User.js";
-import Role from "./Role.js";
+import User from './User.js';
+import Role from './Role.js';

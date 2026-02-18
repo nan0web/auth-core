@@ -9,8 +9,8 @@
  * member.join('teamA', 'moderator', new Set(['r', 'w']), { dailyCoins: 10 })
  * console.log(member.can('teamA', 'w')) // true
  */
-import User from "./User.js"
-import Role from "./Role.js"
+import User from './User.js'
+import Role from './Role.js'
 
 /**
  * Class representing a user's group membership with role and permissions.
@@ -48,13 +48,13 @@ export default class Membership extends User {
 	 * @returns {boolean}
 	 */
 	can(key, perm) {
-		if (!["r", "w", "d", "*"].includes(perm)) {
+		if (!['r', 'w', 'd', '*'].includes(perm)) {
 			throw new TypeError("Permission must be one of 'r', 'w', 'd', '*'")
 		}
 		const mem = this.memberships.get(key)
 		if (!mem) return false
 		const roleVal = mem.role.value
-		if ([Role.ROLES.admin, "admin"].includes(roleVal)) return true
+		if ([Role.ROLES.admin, 'admin'].includes(roleVal)) return true
 		return mem.perms.has(perm)
 	}
 
@@ -66,7 +66,7 @@ export default class Membership extends User {
 	 * @param {Set<'r'|'w'|'d'|'*'>} [perms=new Set(['r'])] - Set of permissions.
 	 * @param {Object} [config={}] - Additional configuration for the membership.
 	 */
-	join(key, roleValue = "user", perms = new Set(["r"]), config = {}) {
+	join(key, roleValue = 'user', perms = new Set(['r']), config = {}) {
 		this.memberships.set(key, {
 			role: Role.from(roleValue),
 			perms,

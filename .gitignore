@@ -4,3 +4,4 @@
 node_modules/
 test-auth-data/
 me.md
+session.json

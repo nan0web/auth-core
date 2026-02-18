@@ -1,8 +1,8 @@
 # @nan0web/auth-core
 
-|Назва пакету|[Статус](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв)|Документація|Тестове покриття|Фічі|Версія npm|
-|---|---|---|---|---|---|
-|[@nan0web/auth-core](https://github.com/nan0web/auth-core/)|🟢 `99.4%`|🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/auth-core/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/auth-core/blob/main/docs/uk/README.md)|🟢 `98.5%`|✅ d.ts 📜 system.md 🕹️ playground|—|
+| Назва пакету                                                | [Статус](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв) | Документація                                                                                                                                                      | Тестове покриття | Фічі                               | Версія npm |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------- | ---------- |
+| [@nan0web/auth-core](https://github.com/nan0web/auth-core/) | 🟢 `99.4%`                                                                            | 🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/auth-core/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/auth-core/blob/main/docs/uk/README.md) | 🟢 `98.5%`       | ✅ d.ts 📜 system.md 🕹️ playground | —          |
 
 Мінімальне ядро аутентифікації, що надає:
 
@@ -15,16 +15,19 @@
 ## Встановлення
 
 Як встановити за допомогою npm?
+
 ```bash
 npm install @nan0web/auth-core
 ```
 
 Як встановити за допомогою pnpm?
+
 ```bash
 pnpm add @nan0web/auth-core
 ```
 
 Як встановити за допомогою yarn?
+
 ```bash
 yarn add @nan0web/auth-core
 ```
@@ -34,17 +37,18 @@ yarn add @nan0web/auth-core
 Створіть користувача, призначте ролі та перевірте їх наявність.
 
 Як створити `User` та перевірити ролі?
+
 ```js
-import { User, Role } from "@nan0web/auth-core"
+import { User, Role } from '@nan0web/auth-core'
 const user = new User({
-	name: "Alice",
-	email: "alice@example.com",
-	roles: ["admin", "user"],
+  name: 'Alice',
+  email: 'alice@example.com',
+  roles: ['admin', 'user'],
 })
 console.info(user.toString({ detailed: true, hideDate: true }))
 // Alice <alice@example.com> admin, user
-console.info(user.is("admin")) // ← true
-console.info(user.is("guest")) // ← false
+console.info(user.is('admin')) // ← true
+console.info(user.is('guest')) // ← false
 ```
 
 ## Робота з токенами
@@ -52,8 +56,9 @@ console.info(user.is("guest")) // ← false
 Керуйте токенами за допомогою `TokenExpiryService`.
 
 Як створити токен та перевірити його дійсність?
+
 ```js
-import { TokenExpiryService } from "@nan0web/auth-core"
+import { TokenExpiryService } from '@nan0web/auth-core'
 const service = new TokenExpiryService(2000) // 2 секунди
 const tokenTime = new Date()
 console.info(service.isValid(tokenTime)) // ← true
@@ -69,19 +74,20 @@ console.info(service.getExpiryDate(tokenTime).toISOString())
 Приєднуйтесь до групи, перевіряйте дозволи, мінтуйте щоденні монети та бачте обхід адмін‑прав.
 
 Як використати `Membership` для управління груповими дозволами?
+
 ```js
-import { Membership, Role } from "@nan0web/auth-core"
+import { Membership, Role } from '@nan0web/auth-core'
 const mem = new Membership()
 // звичайна група з явними дозволами
-mem.join("lawyers", "moderator", new Set(["r", "w"]), { dailyCoins: 10 })
-console.info(mem.can("lawyers", "r")) // ← true
-console.info(mem.can("lawyers", "d")) // ← false
-mem.mintDailyCoins("lawyers")
-const inner = mem.memberships.get("lawyers")
+mem.join('lawyers', 'moderator', new Set(['r', 'w']), { dailyCoins: 10 })
+console.info(mem.can('lawyers', 'r')) // ← true
+console.info(mem.can('lawyers', 'd')) // ← false
+mem.mintDailyCoins('lawyers')
+const inner = mem.memberships.get('lawyers')
 console.info(inner?.config.wallet === 10n) // ← true
 // роль admin обходить усі перевірки дозволів
-mem.join("admins", "admin", new Set(), {})
-console.info(mem.can("admins", "*")) // ← true
+mem.join('admins', 'admin', new Set(), {})
+console.info(mem.can('admins', '*')) // ← true
 ```
 
 ## Фасад Auth
@@ -89,9 +95,10 @@ console.info(mem.can("admins", "*")) // ← true
 Об’єкт, що експортує простий доступ до основних класів.
 
 Як використати фасад `Auth`?
+
 ```js
-import { Auth } from "@nan0web/auth-core"
-const user = new Auth.User({ name: "Bob" })
+import { Auth } from '@nan0web/auth-core'
+const user = new Auth.User({ name: 'Bob' })
 // Виведення імені користувача з датою створення
 console.info(user.toString())
 // Bob
@@ -102,47 +109,47 @@ console.info(user.toString())
 
 ### User
 
-* **Властивості**
-	* `name` – рядок
-	* `email` – рядок
-	* `roles` – `Role[]`
-	* `createdAt` – `Date`
-	* `updatedAt` – `Date`
+- **Властивості**
+  - `name` – рядок
+  - `email` – рядок
+  - `roles` – `Role[]`
+  - `createdAt` – `Date`
+  - `updatedAt` – `Date`
 
-* **Методи**
-	* `is(role)` – перевіряє наявність вказаної ролі у користувача
-	* `toObject()` – просте представлення без приватних токенів
+- **Методи**
+  - `is(role)` – перевіряє наявність вказаної ролі у користувача
+  - `toObject()` – просте представлення без приватних токенів
 
 ### Role
 
-* **Статичні РОЛІ**
-	* `admin` – `"a"`
-	* `author` – `"r"`
-	* `moderator` – `"m"`
-	* `user` – `"u"`
+- **Статичні РОЛІ**
+  - `admin` – `"a"`
+  - `author` – `"r"`
+  - `moderator` – `"m"`
+  - `user` – `"u"`
 
-* **Методи**
-	* `toString()` – повертає значення ролі
+- **Методи**
+  - `toString()` – повертає значення ролі
 
 ### Membership
 
-* **Властивості**
-	* `memberships` – `Map<string, { role: Role, perms: Set<string>, config: object }>`
+- **Властивості**
+  - `memberships` – `Map<string, { role: Role, perms: Set<string>, config: object }>`
 
-* **Методи**
-	* `join(key, roleValue, perms, config)` – додати групу
-	* `can(key, perm)` – перевірка дозволу (роль admin обходить)
-	* `mintDailyCoins(key)` – додати щоденну кількість монет з конфігурації (оновлює `wallet` у конфіг)
+- **Методи**
+  - `join(key, roleValue, perms, config)` – додати групу
+  - `can(key, perm)` – перевірка дозволу (роль admin обходить)
+  - `mintDailyCoins(key)` – додати щоденну кількість монет з конфігурації (оновлює `wallet` у конфіг)
 
 ### TokenExpiryService
 
-* **Конструктор**
-	* `new TokenExpiryService(lifetimeMs)`
+- **Конструктор**
+  - `new TokenExpiryService(lifetimeMs)`
 
-* **Методи**
-	* `isValid(creationDate, lifetime?)`
-	* `getExpiryDate(issuedAt?, lifetime?)`
-	* `extendLifetime(creationDate, extensionMs?, maxLifetime?)`
+- **Методи**
+  - `isValid(creationDate, lifetime?)`
+  - `getExpiryDate(issuedAt?, lifetime?)`
+  - `extendLifetime(creationDate, extensionMs?, maxLifetime?)`
 
 ### Auth
 

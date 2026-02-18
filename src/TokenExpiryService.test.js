@@ -18,7 +18,7 @@ suite('TokenExpiryService', () => {
 
 		it('should create with custom lifetime', () => {
 			const customService = new TokenExpiryService(5000)
-			assert.equal(String(customService), "5.000s")
+			assert.equal(String(customService), '5.000s')
 		})
 	})
 
@@ -90,7 +90,7 @@ suite('TokenExpiryService', () => {
 		it('should create new instance from number', () => {
 			const fromNumber = TokenExpiryService.from(3000)
 			assert.ok(fromNumber instanceof TokenExpiryService)
-			assert.equal(String(fromNumber), "3.000s")
+			assert.equal(String(fromNumber), '3.000s')
 		})
 	})
 })

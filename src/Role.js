@@ -8,7 +8,7 @@
  * const role = Role.from('admin')
  * console.log(role.toString()) // 'a'
  */
-import { Enum } from "@nan0web/types"
+import { Enum } from '@nan0web/types'
 
 /**
  * Class representing a user role.
@@ -22,10 +22,10 @@ class Role {
 	 * @type {{ admin: string, author: string, moderator: string, user: string }}
 	 */
 	static ROLES = {
-		admin: "a",
-		author: "r",
-		moderator: "m",
-		user: "u",
+		admin: 'a',
+		author: 'r',
+		moderator: 'm',
+		user: 'u',
 	}
 	/** @type {string} */
 	value
@@ -37,7 +37,7 @@ class Role {
 	 * @param {string} input.value - Role value or name.
 	 */
 	constructor(input) {
-		const { value = "" } = input
+		const { value = '' } = input
 		// Enum validates that the provided value matches a key or value of ROLES.
 		this.value = Enum(...[...Object.keys(this.ROLES), ...Object.values(this.ROLES)])(value)
 		this.validateRoles()
@@ -57,12 +57,12 @@ class Role {
 	 */
 	validateRoles() {
 		const values = Object.values(this.ROLES)
-		if (values.some(v => v.includes(","))) {
-			throw new TypeError("Role must not include commas")
+		if (values.some((v) => v.includes(','))) {
+			throw new TypeError('Role must not include commas')
 		}
 		const set = new Set(values)
 		if (set.size !== values.length) {
-			throw new TypeError("All predefined roles must be unique")
+			throw new TypeError('All predefined roles must be unique')
 		}
 	}
 	/**
@@ -72,14 +72,10 @@ class Role {
 	 * @returns {string}
 	 */
 	toString(input = { detailed: false }) {
-		const {
-			detailed = false
-		} = input
+		const { detailed = false } = input
 		if (!detailed) return this.value
-		const roles = Object.fromEntries(Object.entries(this.ROLES).map(
-			([key, value]) => [value, key])
-		)
-		return roles[this.value] ?? ""
+		const roles = Object.fromEntries(Object.entries(this.ROLES).map(([key, value]) => [value, key]))
+		return roles[this.value] ?? ''
 	}
 	/**
 	 * Create a Role instance from a string or existing Role.
@@ -89,7 +85,7 @@ class Role {
 	 */
 	static from(input) {
 		if (input instanceof Role) return input
-		if (typeof input === "string") {
+		if (typeof input === 'string') {
 			// If the string matches a role key, convert to its value.
 			if (Object.prototype.hasOwnProperty.call(this.ROLES, input)) {
 				return new this({ value: this.ROLES[input] })

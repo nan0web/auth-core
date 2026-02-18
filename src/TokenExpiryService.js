@@ -16,7 +16,7 @@ class TokenExpiryService {
 	}
 
 	toString() {
-		return (this.#defaultLifetime / 1000).toFixed(3) + "s"
+		return (this.#defaultLifetime / 1000).toFixed(3) + 's'
 	}
 
 	/**
@@ -29,7 +29,7 @@ class TokenExpiryService {
 		if (!(tokenCreationTime instanceof Date)) {
 			throw new TypeError('tokenCreationTime must be a Date instance')
 		}
-		return (Date.now() - tokenCreationTime.getTime()) < Number(lifetime)
+		return Date.now() - tokenCreationTime.getTime() < Number(lifetime)
 	}
 
 	/**
