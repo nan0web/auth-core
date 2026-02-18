@@ -329,9 +329,8 @@ function testRender() {
 		assert.equal(pkg.scripts?.prepush, 'npm test')
 		assert.equal(pkg.scripts?.prepare, 'husky')
 		const text = await fs.loadDocument('CONTRIBUTING.md')
-		const str = text.toString()
-		// assert.ok(str.includes('# Contributing'))
-		assert.ok(str.length > 0)
+		const str = text?.content ?? String(text)
+		assert.ok(str.includes('# Contributing'))
 	})
 
 	/**
@@ -348,7 +347,6 @@ function testRender() {
 describe('README.md testing', testRender)
 
 describe('Rendering README.md', async () => {
-	console.log(testRender.toString().slice(0, 500))
 	let text = ''
 	const format = new Intl.NumberFormat('en-US').format
 	const parser = new DocsParser()
@@ -359,6 +357,7 @@ describe('Rendering README.md', async () => {
 
 	it(`document is rendered in README.md [${format(Buffer.byteLength(text))}b]`, async () => {
 		const txt = await fs.loadDocument('README.md')
-		// assert.ok(txt.toString().includes('AccessControl'))
+		const str = txt?.content ?? String(txt)
+		assert.ok(str.includes('## API reference'))
 	})
 })
