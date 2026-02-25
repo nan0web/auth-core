@@ -150,9 +150,12 @@ export default class AccessControl {
 			if (!rule?.target) return false
 			const accessMatch = rule.access.includes(level)
 			let target = rule.target.startsWith('/') ? rule.target : `/${rule.target}`
-			// Strip trailing slash for consistent matching
+			// Strip trailing slash for consistent matching except for root
 			if (target.length > 1 && target.endsWith('/')) target = target.slice(0, -1)
-			const pathMatch = path === target || path.startsWith(target + '/')
+
+			const pathMatch =
+				target === '/' ? path.startsWith('/') : path === target || path.startsWith(target + '/')
+
 			return accessMatch && pathMatch
 		})
 	}

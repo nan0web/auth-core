@@ -5,6 +5,12 @@ All notable changes to `@nan0web/auth-core` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] — 2026-02-25
+
+### Fixed
+
+- **`#matchAccess`** — fixed root path permission matching. When `target` was `/` or `/*`, it previously resulted in `//` matching false. Now correctly allows root access (`* rwd /`).
+
 ## [1.1.1] — 2026-02-25
 
 ### Fixed
