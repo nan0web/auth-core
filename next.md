@@ -1,55 +1,91 @@
 # @nan0web/auth-core — next.md
 
-> **Поточна версія**: 1.1.0 (локально)
-> **Версія на npm**: 1.0.0
+> **Поточна версія**: 1.1.0 (npm і локально)
+> **Наступна версія**: 1.1.1
 > **Дата**: 2026-02-25
 
 ---
 
-## 🔴 ЗАРАЗ: Опублікувати @nan0web/auth-core@1.1.0
+## 🔴 ЗАРАЗ: Виправити 3 баги → опублікувати 1.1.1
 
-### Підготовка — ✅ DONE
+Детальний опис у `REQUESTS.md`.
 
-- [x] `npm run test:all` — test → test:docs → build → knip → audit — all green
-- [x] `.npmignore` — створено за стандартом system.md
-- [x] `npm pack --dry-run` — 13.3 kB, 23 файли, чистий пакет
-- [x] `docs/uk/README.md` — синхронізовано з README.md (додано AccessControl, Password, Session)
-- [x] `knip.json` — налаштовано, `✂️ Excellent, no issues`
-- [x] `package.json` — додано `test:all`, `knip`, `audit` за стандартом
+### Баг 1: `#matchAccess` — trailing `/` (🔴 Critical)
 
-### Публікація
+Target `admin/` не матчить `/admin/files`.
 
-```bash
-npm publish --access public
+- Файл: `src/AccessControl.js`, метод `#matchAccess`
+- Причина: `target + '/'` → `'/admin//'` — ніколи не спрацьовує
+- **Фікс**: стрипнути trailing `/` перед порівнянням:
 
-# Перевірка:
-npm view @nan0web/auth-core version
-# Очікувано: 1.1.0
+```js
+let target = rule.target.startsWith('/') ? rule.target : `/${rule.target}`
+if (target.length > 1 && target.endsWith('/')) target = target.slice(0, -1)
+const pathMatch = path === target || path.startsWith(target + '/')
 ```
 
-### Що змінилось у 1.1.0 (відносно 1.0.0)
+- **Тест**: додати `it('trailing slash in target')` у `AccessControl.test.js`
 
-#### Виправлення TypeScript build помилок
+### Баг 2: User-specific rules у `check()` (🟡 Medium)
 
-1. **`AccessControl.js`** — em-dash (`—`) в JSDoc `@param` замінено на дефіс (`-`).
-2. **`Password.js`** — аналогічно, em-dash в `@param` та `@returns` замінено на дефіс.
-3. **`App/Auth.js`** — `import { Command } from '@nan0web/co'` → `import Command from '@nan0web/co'`.
+`check()` не перевіряє `subject === username` напряму.
 
-#### Гігієна пакету (нове)
+- Файл: `src/AccessControl.js`, метод `check` та `info`
+- **Фікс**: додати крок 1 — user-specific:
 
-4. **`.npmignore`** — створено за шаблоном system.md (coverage/, me.md, session.json додатково)
-5. **`knip.json`** — налаштовано для production-перевірки
-6. **`package.json`** — `test:all` конвеєр за стандартом архітектури
+```js
+const userRules = this.#rules.filter((r) => r.subject === username)
+if (this.#matchAccess(userRules, path, level)) return true
+```
 
-### Після публікації
+- Аналогічно оновити `info()` — додати userRules першими
 
-1. ✅ `@nan0web/auth-node` зможе використовувати `@nan0web/auth-core@^1.1.0`
-2. ✅ `willni` зможе оновити залежність
-3. ✅ Розблокується `auth.app`
+### Баг 3: Зависання при `import Auth from '@nan0web/auth-core'` (🔴 Critical)
+
+У контексті `@nan0web/auth-node` (pnpm monorepo) імпорт зависає нескінченно.
+
+- Статичний аналіз **не знайшов** `setInterval`, `readline`, `stdin`, `while`
+- Можливі причини: pnpm symlink circular dependency, або щось у ланцюгу `Role.js` → `@nan0web/types` → `Parser`
+- **Діагностика після перезапуску терміналів**:
+
+```bash
+# Покроковий імпорт — виявити який модуль зависає:
+node -e "import('./src/AccessControl.js').then(() => console.log('AC OK'))"
+node -e "import('./src/Role.js').then(() => console.log('Role OK'))"
+node -e "import('./src/User.js').then(() => console.log('User OK'))"
+node -e "import('./src/Password.js').then(() => console.log('Password OK'))"
+node -e "import('./src/Session.js').then(() => console.log('Session OK'))"
+node -e "import('./src/index.js').then(() => console.log('ALL OK'))"
+```
+
+### Чеклист 1.1.1
+
+- [ ] Фікс `#matchAccess` — trailing `/`
+- [ ] Додати user-specific в `check()` та `info()`
+- [ ] Діагностувати і виправити зависання при імпорті
+- [ ] Всі існуючі тести проходять
+- [ ] Нові тести для trailing `/` та user-specific rules
+- [ ] `npm run test:all` — pass
+- [ ] `npm version 1.1.1`
+- [ ] `npm publish --access public`
 
 ---
 
-## 🟡 ДАЛІ: Roadmap auth-core
+## ✅ DONE: v1.1.0
+
+Опубліковано на npm 2026-02-25.
+
+### Що змінилось у 1.1.0 (відносно 1.0.0)
+
+- **`AccessControl`** — новий клас (pure, sync, zero I/O)
+- **`Password`** — scrypt hashing/verify
+- **`Session`** — lightweight JSON-based session persistence
+- TypeScript build fixes (em-dash → hyphen у JSDoc)
+- `.npmignore`, `knip.json`, `test:all` конвеєр
+
+---
+
+## 🟡 ДАЛІ: Roadmap
 
 ### 1.2.0 — Token & JWT
 

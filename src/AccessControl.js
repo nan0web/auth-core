@@ -67,12 +67,16 @@ export default class AccessControl {
 	check(username, path, level = 'r') {
 		if (!path.startsWith('/')) path = `/${path}`
 
-		// 1. Group rules
+		// 1. User rules (subject === username)
+		const userRules = this.#rules.filter((r) => r.subject === username)
+		if (this.#matchAccess(userRules, path, level)) return true
+
+		// 2. Group rules
 		const userGroups = this.#getUserGroups(username)
 		const groupRules = this.#rules.filter((r) => userGroups.includes(r.subject))
 		if (this.#matchAccess(groupRules, path, level)) return true
 
-		// 2. Global rules (*)
+		// 3. Global rules (*)
 		const globalRules = this.#rules.filter((r) => r.subject === AccessControl.ANY)
 		return this.#matchAccess(globalRules, path, level)
 	}
@@ -85,10 +89,11 @@ export default class AccessControl {
 	 */
 	info(username) {
 		const groups = this.#getUserGroups(username)
+		const userRules = this.#rules.filter((r) => r.subject === username)
 		const groupRules = this.#rules.filter((r) => groups.includes(r.subject))
 		const globalRules = this.#rules.filter((r) => r.subject === AccessControl.ANY)
 		return {
-			rules: [...groupRules, ...globalRules],
+			rules: [...userRules, ...groupRules, ...globalRules],
 			groups,
 		}
 	}
@@ -144,7 +149,9 @@ export default class AccessControl {
 		return rules.some((rule) => {
 			if (!rule?.target) return false
 			const accessMatch = rule.access.includes(level)
-			const target = rule.target.startsWith('/') ? rule.target : `/${rule.target}`
+			let target = rule.target.startsWith('/') ? rule.target : `/${rule.target}`
+			// Strip trailing slash for consistent matching
+			if (target.length > 1 && target.endsWith('/')) target = target.slice(0, -1)
 			const pathMatch = path === target || path.startsWith(target + '/')
 			return accessMatch && pathMatch
 		})

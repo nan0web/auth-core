@@ -172,6 +172,23 @@ suite('AccessControl', () => {
 			assert.equal(ac.check('guest', 'course', 'r'), true)
 		})
 
+		it('user-specific rules (subject === username)', () => {
+			const ac = new AccessControl()
+			ac.load('artem r /special\n* r /public', '')
+			assert.equal(ac.check('artem', '/special', 'r'), true)
+			assert.equal(ac.check('anyone', '/special', 'r'), false)
+			assert.equal(ac.check('anyone', '/public', 'r'), true)
+		})
+
+		it('trailing slash handling in target', () => {
+			const ac = new AccessControl()
+			ac.load('* r /admin/', '')
+			assert.equal(ac.check('anyone', '/admin', 'r'), true)
+			assert.equal(ac.check('anyone', '/admin/', 'r'), true)
+			assert.equal(ac.check('anyone', '/admin/foo', 'r'), true)
+			assert.equal(ac.check('anyone', '/admin-forbidden', 'r'), false)
+		})
+
 		it('prefix matching — /admin matches /admin/users', () => {
 			const ac = new AccessControl()
 			ac.load(ACCESS, GROUPS)
