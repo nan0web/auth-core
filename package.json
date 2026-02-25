@@ -19,7 +19,10 @@
 		"clean": "rm -rf .cache/ && rm -rf dist/",
 		"clean:modules": "rm -rf node_modules",
 		"play": "node play/main.js",
-		"check": "npm run test && npm run test:docs && npm run build"
+		"test:all": "npm run test && npm run test:docs && npm run build && npm run knip && npm run audit",
+		"check": "npm run test:all",
+		"knip": "knip --production",
+		"audit": "pnpm audit --prod || true"
 	},
 	"keywords": [],
 	"author": "ЯRаСлав YaRaSlove <support@yaro.page>",
@@ -28,7 +31,8 @@
 	"devDependencies": {
 		"@nan0web/test": "^1.0.2",
 		"@nan0web/types": "^1.0.2",
-		"husky": "^9.1.7"
+		"husky": "^9.1.7",
+		"knip": "^5.85.0"
 	},
 	"peerDependencies": {
 		"@nan0web/types": "^1.0.0"

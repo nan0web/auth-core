@@ -59,5 +59,5 @@ declare class Role {
      */
     toString(input?: {
         detailed?: boolean | undefined;
-    } | undefined): string;
+    }): string;
 }

@@ -23,14 +23,14 @@ declare class TokenExpiryService {
      * @param {number} [lifetime=this.#defaultLifetime] - Token lifetime in milliseconds
      * @returns {boolean} True if token is still valid, false otherwise
      */
-    isValid(tokenCreationTime: Date, lifetime?: number | undefined): boolean;
+    isValid(tokenCreationTime: Date, lifetime?: number): boolean;
     /**
      * Calculate token expiry date
      * @param {Date} [issuedAt=new Date()] - Token issue date
      * @param {number} [lifetime=this.#defaultLifetime] - Token lifetime in milliseconds
      * @returns {Date} Expiry date
      */
-    getExpiryDate(issuedAt?: Date | undefined, lifetime?: number | undefined): Date;
+    getExpiryDate(issuedAt?: Date, lifetime?: number): Date;
     /**
      * Extend token lifetime by specified milliseconds
      * @param {Date} tokenCreationTime - When the token was created
@@ -38,6 +38,6 @@ declare class TokenExpiryService {
      * @param {number} [maxLifetime=this.#defaultLifetime] - Maximum lifetime allowed
      * @returns {number} Extended lifetime in milliseconds
      */
-    extendLifetime(tokenCreationTime: Date, extensionMs?: number | undefined, maxLifetime?: number | undefined): number;
+    extendLifetime(tokenCreationTime: Date, extensionMs?: number, maxLifetime?: number): number;
     #private;
 }

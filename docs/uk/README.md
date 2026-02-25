@@ -1,16 +1,17 @@
 # @nan0web/auth-core
 
-| Назва пакету                                                | [Статус](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв) | Документація                                                                                                                                                      | Тестове покриття | Фічі                               | Версія npm |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------- | ---------- |
-| [@nan0web/auth-core](https://github.com/nan0web/auth-core/) | 🟢 `99.4%`                                                                            | 🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/auth-core/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/auth-core/blob/main/docs/uk/README.md) | 🟢 `98.5%`       | ✅ d.ts 📜 system.md 🕹️ playground | —          |
+<!-- %PACKAGE_STATUS% -->
 
 Мінімальне ядро аутентифікації, що надає:
 
-- `User` – модель користувача з обробкою ролей та управлінням токенами
-- `Role` – перелік ролей користувачів
-- `Membership` – груповий набір дозволів
-- `TokenExpiryService` – прості утиліти для часу життя токену
-- `Auth` – фасад, що експортує вищезазначені класи
+- `User` – модель користувача з обробкою ролей та управлінням токенами
+- `Role` – перелік ролей користувачів
+- `Membership` – груповий набір дозволів
+- `AccessControl` – data-driven авторизаційний резолвер (парсер + матчер)
+- `Password` – безпечне хешування паролів (scrypt)
+- `Session` – збереження ідентичності у файловій системі
+- `TokenExpiryService` – прості утиліти для часу життя токену
+- `Auth` – фасад, що експортує вищезазначені класи
 
 ## Встановлення
 
@@ -59,7 +60,7 @@ console.info(user.is('guest')) // ← false
 
 ```js
 import { TokenExpiryService } from '@nan0web/auth-core'
-const service = new TokenExpiryService(2000) // 2 секунди
+const service = new TokenExpiryService(2000) // 2 секунди
 const tokenTime = new Date()
 console.info(service.isValid(tokenTime)) // ← true
 // симуляція прискореного часу
@@ -90,9 +91,57 @@ mem.join('admins', 'admin', new Set(), {})
 console.info(mem.can('admins', '*')) // ← true
 ```
 
+## AccessControl
+
+Універсальний парсер і матчер для правил доступу (файли .access та .group).
+Трирівнева резолюція: User → Group → Global (\*).
+
+Як перевірити доступ за допомогою `AccessControl`?
+
+```js
+import { AccessControl } from '@nan0web/auth-core'
+const ac = new AccessControl()
+// Завантажуємо вміст правил (зазвичай з файлів)
+ac.load(
+  '* r /public\nadmin rwd /admin', // .access
+  'admin sovr', // .group
+)
+console.info(ac.check('sovr', '/admin', 'w')) // ← true (через групу admin)
+console.info(ac.check('guest', '/public', 'r')) // ← true (через *)
+console.info(ac.check('guest', '/admin', 'r')) // ← false
+```
+
+## Password
+
+Хешування на основі scrypt із timing-safe верифікацією.
+
+Як хешувати та перевіряти паролі?
+
+```js
+import { Password } from '@nan0web/auth-core'
+const hash = Password.hash('sovereign')
+console.info(hash) // рядок salt:hash
+console.info(Password.verify('sovereign', hash)) // ← true
+console.info(Password.verify('wrong', hash)) // ← false
+```
+
+## Session
+
+Збереження/завантаження ідентичності користувача (email) у JSON-файл.
+
+Як зберегти сесію?
+
+```js
+import { Session } from '@nan0web/auth-core'
+const session = new Session('./session.json')
+session.save('sovr@yaro.page')
+console.info(session.load()) // ← sovr@yaro.page
+session.clear()
+```
+
 ## Фасад Auth
 
-Об’єкт, що експортує простий доступ до основних класів.
+Об'єкт, що експортує простий доступ до основних класів.
 
 Як використати фасад `Auth`?
 
@@ -110,36 +159,57 @@ console.info(user.toString())
 ### User
 
 - **Властивості**
-  - `name` – рядок
-  - `email` – рядок
-  - `roles` – `Role[]`
-  - `createdAt` – `Date`
-  - `updatedAt` – `Date`
+  - `name` – рядок
+  - `email` – рядок
+  - `roles` – `Role[]`
+  - `createdAt` – `Date`
+  - `updatedAt` – `Date`
 
 - **Методи**
-  - `is(role)` – перевіряє наявність вказаної ролі у користувача
-  - `toObject()` – просте представлення без приватних токенів
+  - `is(role)` – перевіряє наявність вказаної ролі у користувача
+  - `toObject()` – просте представлення без приватних токенів
 
 ### Role
 
 - **Статичні РОЛІ**
-  - `admin` – `"a"`
-  - `author` – `"r"`
-  - `moderator` – `"m"`
-  - `user` – `"u"`
+  - `admin` – `"a"`
+  - `author` – `"r"`
+  - `moderator` – `"m"`
+  - `user` – `"u"`
 
 - **Методи**
-  - `toString()` – повертає значення ролі
+  - `toString()` – повертає значення ролі
 
 ### Membership
 
 - **Властивості**
-  - `memberships` – `Map<string, { role: Role, perms: Set<string>, config: object }>`
+  - `memberships` – `Map<string, { role: Role, perms: Set<string>, config: object }>`
 
 - **Методи**
-  - `join(key, roleValue, perms, config)` – додати групу
-  - `can(key, perm)` – перевірка дозволу (роль admin обходить)
-  - `mintDailyCoins(key)` – додати щоденну кількість монет з конфігурації (оновлює `wallet` у конфіг)
+  - `join(key, roleValue, perms, config)` – додати групу
+  - `can(key, perm)` – перевірка дозволу (роль admin обходить)
+  - `mintDailyCoins(key)` – додати щоденну кількість монет з конфігурації (оновлює `wallet` у конфіг)
+
+### AccessControl
+
+- **Методи**
+  - `load(accessContent, groupContent)` – парсити правила з рядків
+  - `check(username, path, level)` – true/false
+  - `filterNav(items, username)` – фільтрувати пункти меню
+  - `info(username)` – отримати ефективні правила та групи
+
+### Password
+
+- **Статичні методи**
+  - `hash(plain, projectSalt?)` – повертає "salt:hash"
+  - `verify(input, stored, projectSalt?)` – timing-safe перевірка
+
+### Session
+
+- **Методи**
+  - `save(email)`
+  - `load()`
+  - `clear()`
 
 ### TokenExpiryService
 
@@ -160,8 +230,6 @@ console.info(user.toString())
 ## JavaScript
 
 Типи описані через JSDoc, а згенеровані `.d.ts` файли забезпечують автодоповнення.
-
-Використовуються `.d.ts` лише для декларацій, щоб стисло передати типи.
 
 ## Внесок
 

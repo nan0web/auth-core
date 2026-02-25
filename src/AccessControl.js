@@ -44,8 +44,8 @@ export default class AccessControl {
 	 * Load rules and groups from raw content strings.
 	 * Call once before check/info/filterNav.
 	 *
-	 * @param {string} accessContent — raw .access file content
-	 * @param {string} groupContent  — raw .group file content
+	 * @param {string} accessContent - raw .access file content
+	 * @param {string} groupContent  - raw .group file content
 	 */
 	load(accessContent, groupContent) {
 		this.#rules = this.#parseAccessFile(accessContent)
@@ -59,9 +59,9 @@ export default class AccessControl {
 	 *   1. Group rules (user belongs to group → group has matching rule)
 	 *   2. Global rules (subject = *)
 	 *
-	 * @param {string} username — user identifier (e.g. email slug)
-	 * @param {string} path — URL path (e.g. "/admin")
-	 * @param {string} [level='r'] — 'r' | 'w' | 'd'
+	 * @param {string} username - user identifier (e.g. email slug)
+	 * @param {string} path - URL path (e.g. "/admin")
+	 * @param {string} [level='r'] - 'r' | 'w' | 'd'
 	 * @returns {boolean}
 	 */
 	check(username, path, level = 'r') {
@@ -100,7 +100,7 @@ export default class AccessControl {
 	 * All other items are filtered by access rules.
 	 *
 	 * @param {Array<{path: string, guest?: boolean}>} navItems
-	 * @param {string|null} username — null = guest (not logged in)
+	 * @param {string|null} username - null = guest (not logged in)
 	 * @returns {Array<{path: string, guest?: boolean}>}
 	 */
 	filterNav(navItems, username) {

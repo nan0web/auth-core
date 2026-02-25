@@ -113,7 +113,7 @@ declare class User {
         hideDate?: boolean | undefined;
         hideRoles?: boolean | undefined;
         eol?: string | undefined;
-    } | undefined): string;
+    }): string;
     #private;
 }
 import TokenExpiryService from './TokenExpiryService.js';

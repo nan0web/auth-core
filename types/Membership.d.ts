@@ -24,7 +24,7 @@ export default class Membership extends User {
      */
     memberships: Map<string, {
         role: Role;
-        perms: Set<'r' | 'w' | 'd' | '*'>;
+        perms: Set<"r" | "w" | "d" | "*">;
         config: any;
     }>;
     /**
@@ -36,7 +36,7 @@ export default class Membership extends User {
      * @param {'r'|'w'|'d'|'*'} perm - Permission to verify.
      * @returns {boolean}
      */
-    can(key: string, perm: 'r' | 'w' | 'd' | '*'): boolean;
+    can(key: string, perm: "r" | "w" | "d" | "*"): boolean;
     /**
      * Add or join a membership group.
      *
@@ -45,7 +45,7 @@ export default class Membership extends User {
      * @param {Set<'r'|'w'|'d'|'*'>} [perms=new Set(['r'])] - Set of permissions.
      * @param {Object} [config={}] - Additional configuration for the membership.
      */
-    join(key: string, roleValue?: string | undefined, perms?: Set<"r" | "w" | "d" | "*"> | undefined, config?: any): void;
+    join(key: string, roleValue?: string, perms?: Set<"r" | "w" | "d" | "*">, config?: any): void;
     /**
      * Mint daily coins for a membership based on its configuration.
      *
