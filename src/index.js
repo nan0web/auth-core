@@ -5,6 +5,7 @@ import Role from './Role.js'
 import AccessControl from './AccessControl.js'
 import Password from './Password.js'
 import Session from './Session.js'
+import Crypto from './Crypto.js'
 
 class Auth {
 	static AccessControl = AccessControl
@@ -14,8 +15,19 @@ class Auth {
 	static Session = Session
 	static User = User
 	static TokenExpiryService = TokenExpiryService
+	static Crypto = Crypto
 }
 
-export { Auth, AccessControl, Membership, Password, Role, Session, User, TokenExpiryService }
+export {
+	Auth,
+	AccessControl,
+	Membership,
+	Password,
+	Role,
+	Session,
+	User,
+	TokenExpiryService,
+	Crypto,
+}
 
 export default Auth

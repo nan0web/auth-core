@@ -29,15 +29,15 @@
 	"license": "ISC",
 	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
-		"@nan0web/test": "^1.0.2",
-		"@nan0web/types": "^1.0.2",
+		"@nan0web/test": "*",
+		"@nan0web/types": "*",
 		"husky": "^9.1.7",
 		"knip": "^5.85.0"
 	},
 	"peerDependencies": {
-		"@nan0web/types": "^1.0.0"
+		"@nan0web/types": "*"
 	},
 	"dependencies": {
-		"@nan0web/log": "1.1.1"
+		"@nan0web/log": "*"
 	}
 }

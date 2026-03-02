@@ -7,6 +7,7 @@ export class Auth {
     static Session: typeof Session;
     static User: typeof User;
     static TokenExpiryService: typeof TokenExpiryService;
+    static Crypto: typeof Crypto;
 }
 import AccessControl from './AccessControl.js';
 import Membership from './Membership.js';
@@ -15,4 +16,5 @@ import Role from './Role.js';
 import Session from './Session.js';
 import User from './User.js';
 import TokenExpiryService from './TokenExpiryService.js';
-export { AccessControl, Membership, Password, Role, Session, User, TokenExpiryService };
+import Crypto from './Crypto.js';
+export { AccessControl, Membership, Password, Role, Session, User, TokenExpiryService, Crypto };
