@@ -13,6 +13,8 @@ import {
 	AccessControl,
 	Password,
 	Session,
+	Crypto,
+	Token,
 } from './index.js'
 
 const fs = new FS()
@@ -39,6 +41,8 @@ function testRender() {
 	 * @docs
 	 * # @nan0web/auth-core
 	 *
+	 * > 🇬🇧 [English](./README.md) | 🇺🇦 [Українська](./docs/uk/README.md)
+	 *
 	 * <!-- %PACKAGE_STATUS% -->
 	 *
 	 * Minimal authentication core providing:
@@ -50,6 +54,8 @@ function testRender() {
 	 * - `Password` – secure password hashing (scrypt)
 	 * - `Session` – filesystem user persistence
 	 * - `TokenExpiryService` – simple token lifetime utilities
+	 * - `Token` – sovereign JWT-compatible token (Ed25519 signed)
+	 * - `Crypto` – Ed25519 key generation, signing, verification
 	 * - `Auth` – facade exporting the above
 	 *
 	 * ## Installation
@@ -231,6 +237,25 @@ function testRender() {
 
 	/**
 	 * @docs
+	 * ## Token – Sovereign JWT
+	 *
+	 * Create, verify, and refresh Ed25519-signed tokens.
+	 */
+	it('How to create and verify a Token?', () => {
+		//import { Token, Crypto } from "@nan0web/auth-core"
+		const { publicKey, privateKey } = Crypto.generateKeyPair()
+		const token = Token.create({ sub: 'sovr@yaro.page' }, privateKey, { expiresIn: 3600 })
+		console.info(typeof token) // ← 'string'
+		const result = Token.verify(token, publicKey)
+		console.info(result.valid) // ← true
+		console.info(result.payload.sub) // ← 'sovr@yaro.page'
+		assert.equal(console.output()[0][1], 'string')
+		assert.equal(console.output()[1][1], true)
+		assert.equal(console.output()[2][1], 'sovr@yaro.page')
+	})
+
+	/**
+	 * @docs
 	 * ## API reference
 	 *
 	 * ### User
@@ -300,13 +325,33 @@ function testRender() {
 	 *
 	 * ### Auth
 	 *
-	 * Facade exporting `User`, `Role`, `TokenExpiryService`, `Membership`.
+	 * Facade exporting `User`, `Role`, `TokenExpiryService`, `Membership`, `Token`, `Crypto`.
+	 *
+	 * ### Token
+	 *
+	 * * **Static Methods**
+	 *   * `Token.create(payload, privateKey, options?)` – create signed token
+	 *   * `Token.verify(token, publicKey)` – verify and decode `{ valid, payload, error? }`
+	 *   * `Token.decode(token)` – decode without verification
+	 *   * `Token.refresh(token, privateKey, options?)` – re-sign with new iat/exp
+	 *
+	 * ### Crypto
+	 *
+	 * * **Static Properties**
+	 *   * `isNode` – boolean, true in Node.js environment
+	 *
+	 * * **Static Methods**
+	 *   * `generateKeyPair()` – Ed25519 key pair (Base64 DER)
+	 *   * `sign(privateKey, data, options?)` – sign data (Base64 or hex with `{ compact: true }`)
+	 *   * `verify(publicKey, data, signature, options?)` – verify signature
 	 */
 	it('All exported classes should be available', () => {
 		assert.ok(User)
 		assert.ok(Role)
 		assert.ok(Membership)
 		assert.ok(TokenExpiryService)
+		assert.ok(Token)
+		assert.ok(Crypto)
 		assert.ok(Auth)
 	})
 

@@ -1,43 +1,45 @@
 # @nan0web/auth-core
 
+> 🇺🇦 [Українська](./README.md) | 🇬🇧 [English](../../README.md)
+
 <!-- %PACKAGE_STATUS% -->
 
-Мінімальне ядро аутентифікації, що надає:
+Мінімальне ядро автентифікації:
 
-- `User` – модель користувача з обробкою ролей та управлінням токенами
+- `User` – модель користувача з керуванням ролями та токенами
 - `Role` – перелік ролей користувачів
-- `Membership` – груповий набір дозволів
-- `AccessControl` – data-driven авторизаційний резолвер (парсер + матчер)
+- `Membership` – групові дозволи
+- `AccessControl` – data-driven аутентифікаційний резолвер (парсер + матчер)
 - `Password` – безпечне хешування паролів (scrypt)
-- `Session` – збереження ідентичності у файловій системі
-- `TokenExpiryService` – прості утиліти для часу життя токену
-- `Auth` – фасад, що експортує вищезазначені класи
+- `Session` – збереження сесії у файловій системі
+- `TokenExpiryService` – утиліти для керування часом життя токенів
+- `Token` – суверенний JWT-сумісний токен (підпис Ed25519)
+- `Crypto` – генерація ключів Ed25519, підпис, верифікація
+- `Auth` – фасад, що експортує все вищезазначене
 
 ## Встановлення
 
-Як встановити за допомогою npm?
+Встановити через npm:
 
 ```bash
 npm install @nan0web/auth-core
 ```
 
-Як встановити за допомогою pnpm?
+Встановити через pnpm:
 
 ```bash
 pnpm add @nan0web/auth-core
 ```
 
-Як встановити за допомогою yarn?
+Встановити через yarn:
 
 ```bash
 yarn add @nan0web/auth-core
 ```
 
-## Основне використання – User
+## Базове використання – User
 
-Створіть користувача, призначте ролі та перевірте їх наявність.
-
-Як створити `User` та перевірити ролі?
+Створення користувача, призначення ролей та перевірка їх наявності.
 
 ```js
 import { User, Role } from '@nan0web/auth-core'
@@ -52,29 +54,25 @@ console.info(user.is('admin')) // ← true
 console.info(user.is('guest')) // ← false
 ```
 
-## Робота з токенами
+## Керування токенами
 
-Керуйте токенами за допомогою `TokenExpiryService`.
-
-Як створити токен та перевірити його дійсність?
+Керування токенами за допомогою `TokenExpiryService`.
 
 ```js
 import { TokenExpiryService } from '@nan0web/auth-core'
 const service = new TokenExpiryService(2000) // 2 секунди
 const tokenTime = new Date()
 console.info(service.isValid(tokenTime)) // ← true
-// симуляція прискореного часу
+// симуляція плину часу
 const past = new Date(Date.now() - 3000)
 console.info(service.isValid(past)) // ← false
 console.info(service.getExpiryDate(tokenTime).toISOString())
-// дата у ISO‑форматі
+// дата у форматі ISO
 ```
 
 ## Membership – групові дозволи
 
-Приєднуйтесь до групи, перевіряйте дозволи, мінтуйте щоденні монети та бачте обхід адмін‑прав.
-
-Як використати `Membership` для управління груповими дозволами?
+Приєднання до групи, перевірка дозволів, нарахування щоденних монет та обхід для адміна.
 
 ```js
 import { Membership, Role } from '@nan0web/auth-core'
@@ -93,15 +91,13 @@ console.info(mem.can('admins', '*')) // ← true
 
 ## AccessControl
 
-Універсальний парсер і матчер для правил доступу (файли .access та .group).
-Трирівнева резолюція: User → Group → Global (\*).
-
-Як перевірити доступ за допомогою `AccessControl`?
+Універсальний парсер і матчер правил доступу (файли .access та .group).
+Трирівнева резолюція: Користувач → Група → Глобальний (\*).
 
 ```js
 import { AccessControl } from '@nan0web/auth-core'
 const ac = new AccessControl()
-// Завантажуємо вміст правил (зазвичай з файлів)
+// Завантаження сирого контенту (зазвичай з файлів)
 ac.load(
   '* r /public\nadmin rwd /admin', // .access
   'admin sovr', // .group
@@ -113,9 +109,7 @@ console.info(ac.check('guest', '/admin', 'r')) // ← false
 
 ## Password
 
-Хешування на основі scrypt із timing-safe верифікацією.
-
-Як хешувати та перевіряти паролі?
+Хешування на основі scrypt з timing-safe верифікацією.
 
 ```js
 import { Password } from '@nan0web/auth-core'
@@ -127,9 +121,7 @@ console.info(Password.verify('wrong', hash)) // ← false
 
 ## Session
 
-Збереження/завантаження ідентичності користувача (email) у JSON-файл.
-
-Як зберегти сесію?
+Збереження/завантаження ідентичності користувача (email) у JSON файл.
 
 ```js
 import { Session } from '@nan0web/auth-core'
@@ -141,37 +133,49 @@ session.clear()
 
 ## Фасад Auth
 
-Об'єкт, що експортує простий доступ до основних класів.
-
-Як використати фасад `Auth`?
+Експортований об'єкт надає швидкий доступ до основних класів.
 
 ```js
 import { Auth } from '@nan0web/auth-core'
 const user = new Auth.User({ name: 'Bob' })
-// Виведення імені користувача з датою створення
+// Відображення імені з датою створення
 console.info(user.toString())
 // Bob
 // YYYY-MM-DD HH:mm:SS
 ```
 
-## API довідка
+## Token – Суверенний JWT
+
+Створення, верифікація та оновлення токенів з підписом Ed25519.
+
+```js
+import { Token, Crypto } from '@nan0web/auth-core'
+const { publicKey, privateKey } = Crypto.generateKeyPair()
+const token = Token.create({ sub: 'sovr@yaro.page' }, privateKey, { expiresIn: 3600 })
+console.info(typeof token) // ← 'string'
+const result = Token.verify(token, publicKey)
+console.info(result.valid) // ← true
+console.info(result.payload.sub) // ← 'sovr@yaro.page'
+```
+
+## Довідка API
 
 ### User
 
 - **Властивості**
-  - `name` – рядок
-  - `email` – рядок
+  - `name` – string
+  - `email` – string
   - `roles` – `Role[]`
   - `createdAt` – `Date`
   - `updatedAt` – `Date`
 
 - **Методи**
-  - `is(role)` – перевіряє наявність вказаної ролі у користувача
-  - `toObject()` – просте представлення без приватних токенів
+  - `is(role)` – перевірка наявності ролі
+  - `toObject()` – представлення як plain object без приватних токенів
 
 ### Role
 
-- **Статичні РОЛІ**
+- **Статичні ROLES**
   - `admin` – `"a"`
   - `author` – `"r"`
   - `moderator` – `"m"`
@@ -188,14 +192,14 @@ console.info(user.toString())
 - **Методи**
   - `join(key, roleValue, perms, config)` – додати групу
   - `can(key, perm)` – перевірка дозволу (роль admin обходить)
-  - `mintDailyCoins(key)` – додати щоденну кількість монет з конфігурації (оновлює `wallet` у конфіг)
+  - `mintDailyCoins(key)` – нарахувати щоденну кількість монет із config (оновлює `wallet`)
 
 ### AccessControl
 
 - **Методи**
-  - `load(accessContent, groupContent)` – парсити правила з рядків
+  - `load(accessContent, groupContent)` – парсинг правил з рядків
   - `check(username, path, level)` – true/false
-  - `filterNav(items, username)` – фільтрувати пункти меню
+  - `filterNav(items, username)` – фільтрація пунктів меню
   - `info(username)` – отримати ефективні правила та групи
 
 ### Password
@@ -223,18 +227,34 @@ console.info(user.toString())
 
 ### Auth
 
-Фасад, що експортує `User`, `Role`, `TokenExpiryService`, `Membership`.
+Фасад, що експортує `User`, `Role`, `TokenExpiryService`, `Membership`, `Token`, `Crypto`.
 
-Всі експортовані класи мають бути доступні.
+### Token
+
+- **Статичні методи**
+  - `Token.create(payload, privateKey, options?)` – створити підписаний токен
+  - `Token.verify(token, publicKey)` – верифікувати та декодувати `{ valid, payload, error? }`
+  - `Token.decode(token)` – декодувати без верифікації
+  - `Token.refresh(token, privateKey, options?)` – перепідписати з новим iat/exp
+
+### Crypto
+
+- **Статичні властивості**
+  - `isNode` – boolean, true в середовищі Node.js
+
+- **Статичні методи**
+  - `generateKeyPair()` – пара ключів Ed25519 (Base64 DER)
+  - `sign(privateKey, data, options?)` – підписати дані (Base64 або hex з `{ compact: true }`)
+  - `verify(publicKey, data, signature, options?)` – верифікувати підпис
 
 ## JavaScript
 
-Типи описані через JSDoc, а згенеровані `.d.ts` файли забезпечують автодоповнення.
+Типи описані за допомогою JSDoc та згенерованих файлів `.d.ts`.
 
 ## Внесок
 
-Як внести свій вклад? — [деталі тут](./CONTRIBUTING.md)
+Як зробити внесок? — [тут](../../CONTRIBUTING.md)
 
 ## Ліцензія
 
-Яка ліцензія ISC? — [деталі тут](./LICENSE)
+Ліцензія ISC — [тут](../../LICENSE)

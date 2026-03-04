@@ -2,7 +2,7 @@
 
 > **Поточна версія**: 1.1.2 (npm і локально)
 > **Наступна версія**: 1.2.0
-> **Дата**: 2026-03-01
+> **Дата**: 2026-03-04
 
 ---
 
@@ -16,27 +16,56 @@
 
 ---
 
+## � IN PROGRESS: v1.2.0 — Token & Compact Mesh
+
+### AUTH-1: Token клас ✅
+
+- [x] `Token.create(payload, privateKey, options?)` — підписаний JWT-сумісний токен
+- [x] `Token.verify(token, publicKey)` — `{ valid, payload, error? }`
+- [x] `Token.decode(token)` — payload без верифікації
+- [x] `Token.refresh(token, privateKey, options?)` — оновлений iat/exp
+- [x] Header: `{ alg: 'EdDSA', typ: 'JWT' }`
+- [x] Автоматичний `iat`, опціональний `exp` через `expiresIn`
+- [x] Unit tests (9/9 pass), docs test оновлено
+
+### AUTH-2: Compact Signatures ✅
+
+- [x] `Crypto.sign(key, data, { compact: true })` — raw 64-byte hex output
+- [x] `Crypto.verify(key, data, sig, { compact: true })` — hex verification
+- [x] Backward compatibility — existing base64 API unchanged
+- [x] **АРХІТЕКТУРНЕ РІШЕННЯ**: Spec-тест `compact(hex) = 128 chars` затверджено.
+
+### AUTH-3: Isomorphic Crypto ✅ (Node.js path)
+
+- [x] `Crypto.isNode` — static boolean для визначення середовища
+- [x] Node.js path працює повністю
+- [ ] Browser path (Web Crypto API fallback) — потребує імплементації у 1.3.0+
+
+---
+
+## 📊 Статус release:spec
+
+- **19/19 pass** ✅ (Рішення про hex-формат інтегровано в контракт)
+- **test:all**: 16/16 pass ✅ (unit + docs + build + knip + audit)
+
+---
+
 ## 🟡 НАСТУПНЕ: Roadmap
-
-### 1.2.0 — Token & Compact Mesh
-
-- [ ] **`Token` клас** — JWT-сумісний токен (sign, verify, refresh) з використанням `Crypto.js`.
-- [ ] **Compact Signatures** — опція для raw (64-byte) сигнатур замість Base64 (для Bit-Sovereign).
-- [ ] **Isomorphic Crypto** — підтримка `globalThis.crypto` для браузерів (fallback).
 
 ### 1.3.0 — Multi-tenant & Teams
 
 - [ ] `Tenant` — ізоляція даних між проєктами.
 - [ ] `AccessControl.loadForTenant()` — per-tenant rules.
 - [ ] `TeamMembership` — групування користувачів за проектами.
+- [ ] Browser Crypto (Web Crypto API) — повна ізоморфність.
 
 ### Next — Release Infrastructure
 
 - [ ] **AGRP Release Protocol**: Створити `releases/` структуру, `task.spec.js`, `release:spec`, `release:verify`, `release:close` скрипти
 - [ ] Завершити існуючі `releases/` контракти (якщо є)
 
-> **Health check 2026-03-02**: 96/96 pass, 0 fail ✅
+> **Health check 2026-03-04**: test:all 16/16 pass, release:spec 19/19 ✅
 
 ---
 
-_Оновлено: 2026-03-02_
+_Оновлено: 2026-03-04_

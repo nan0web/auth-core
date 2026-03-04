@@ -1,5 +1,7 @@
 # @nan0web/auth-core
 
+> 🇬🇧 [English](./README.md) | 🇺🇦 [Українська](./docs/uk/README.md)
+
 <!-- %PACKAGE_STATUS% -->
 
 Minimal authentication core providing:
@@ -11,6 +13,8 @@ Minimal authentication core providing:
 - `Password` – secure password hashing (scrypt)
 - `Session` – filesystem user persistence
 - `TokenExpiryService` – simple token lifetime utilities
+- `Token` – sovereign JWT-compatible token (Ed25519 signed)
+- `Crypto` – Ed25519 key generation, signing, verification
 - `Auth` – facade exporting the above
 
 ## Installation
@@ -137,6 +141,20 @@ console.info(user.toString())
 // Bob
 // YYYY-MM-DD HH:mm:SS
 ```
+## Token – Sovereign JWT
+
+Create, verify, and refresh Ed25519-signed tokens.
+
+How to create and verify a Token?
+```js
+import { Token, Crypto } from "@nan0web/auth-core"
+const { publicKey, privateKey } = Crypto.generateKeyPair()
+const token = Token.create({ sub: 'sovr@yaro.page' }, privateKey, { expiresIn: 3600 })
+console.info(typeof token) // ← 'string'
+const result = Token.verify(token, publicKey)
+console.info(result.valid) // ← true
+console.info(result.payload.sub) // ← 'sovr@yaro.page'
+```
 ## API reference
 
 ### User
@@ -206,7 +224,25 @@ console.info(user.toString())
 
 ### Auth
 
-Facade exporting `User`, `Role`, `TokenExpiryService`, `Membership`.
+Facade exporting `User`, `Role`, `TokenExpiryService`, `Membership`, `Token`, `Crypto`.
+
+### Token
+
+* **Static Methods**
+  * `Token.create(payload, privateKey, options?)` – create signed token
+  * `Token.verify(token, publicKey)` – verify and decode `{ valid, payload, error? }`
+  * `Token.decode(token)` – decode without verification
+  * `Token.refresh(token, privateKey, options?)` – re-sign with new iat/exp
+
+### Crypto
+
+* **Static Properties**
+  * `isNode` – boolean, true in Node.js environment
+
+* **Static Methods**
+  * `generateKeyPair()` – Ed25519 key pair (Base64 DER)
+  * `sign(privateKey, data, options?)` – sign data (Base64 or hex with `{ compact: true }`)
+  * `verify(publicKey, data, signature, options?)` – verify signature
 
 All exported classes should be available
 
